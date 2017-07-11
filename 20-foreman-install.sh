@@ -2,11 +2,15 @@
 
 source 00-environment.sh
 
-yum install -y centos-release-scl centos-release-scl-rh foreman-release-scl
-yum install -y https://yum.theforeman.org/releases/1.14/el7/x86_64/foreman-release.rpm
+yum install -y firewalld vim
+
 yum install -y epel-release
-yum install -y firewalld
-yum install -y foreman-installer puppet
+yum install -y http://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm
+yum install -y https://yum.theforeman.org/releases/1.14/el7/x86_64/foreman-release.rpm
+
+yum install -y centos-release-scl centos-release-scl-rh foreman-release-scl
+yum install -y puppetserver puppetdb puppet-agent
+yum install -y foreman-installer
 
 echo "DHCP/PXE interface = ${ETH0}"
 

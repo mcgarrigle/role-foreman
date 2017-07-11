@@ -7,8 +7,11 @@ function yaml {
   echo $TEXT
 }
 
-CONSUMER_KEY=$(yaml /var/lib/puppet/foreman_cache_data/oauth_consumer_key)
-CONSUMER_SECRET=$(yaml /var/lib/puppet/foreman_cache_data/oauth_consumer_secret)
+CONSUMER_KEY_FILE='/opt/puppetlabs/puppet/cache/foreman_cache_data/oauth_consumer_key'
+CONSUMER_SECRET_FILE='/opt/puppetlabs/puppet/cache/foreman_cache_data/oauth_consumer_secret'
+
+CONSUMER_KEY=$(yaml $CONSUMER_KEY_FILE)
+CONSUMER_SECRET=$(yaml $CONSUMER_SECRET_FILE)
 
 foreman-installer \
   --enable-foreman-proxy \
@@ -24,8 +27,7 @@ foreman-installer \
   --foreman-proxy-oauth-consumer-secret="${CONSUMER_SECRET}"
 
 # Setup wildcard auto-signing
-
-echo "*" > /etc/puppet/autosign.conf
+# echo "*" > /etc/puppet/autosign.conf
 
 hammer subnet create --name "LOCAL" \
   --boot-mode "Static" \
