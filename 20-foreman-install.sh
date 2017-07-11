@@ -29,16 +29,16 @@ yum install -y https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x
 yum install -y postgresql96-server
 
 /usr/pgsql-9.6/bin/postgresql96-setup initdb
-systemctl enable postgresql
-systemctl start postgresql
+systemctl enable postgresql-9.6
+systemctl start postgresql-9.6
 
 sudo -u postgres psql -c "create user foreman password 'letmein' nocreatedb nocreaterole nosuperuser;"
 sudo -u postgres psql -c "create database foreman owner foreman encoding 'UTF8';"
 /bin/cp pg_hba.conf /var/lib/pgsql/9.6/data/pg_hba.conf
 
-systemctl restart postgresql
+systemctl restart postgresql-9.6
 
-yum install -y centos-release-scl centos-release-scl-rh foreman-release-scl
+yum install -y centos-release-scl centos-release-scl-rh
 # yum install -y puppetserver puppetdb puppet-agent
 
 yum install -y foreman-installer
