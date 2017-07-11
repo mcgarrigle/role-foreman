@@ -1,5 +1,8 @@
 #!/bin/bash
 
+unset http_proxy
+unset https_proxy
+
 source 00-environment.sh
 
 yum install -y firewalld vim
@@ -40,8 +43,6 @@ systemctl restart postgresql-9.6
 
 yum install -y centos-release-scl centos-release-scl-rh
 # yum install -y puppetserver puppetdb puppet-agent
-
-yum install -y foreman-installer
 
 echo "Running Foreman Installer..."
 
