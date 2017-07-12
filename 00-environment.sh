@@ -3,19 +3,8 @@ function uppercase {
   echo $1 | awk '{ print toupper($0) }'
 }
 
-function if-enable {
-  sed -i 's/ONBOOT=no/ONBOOT=yes/' "/etc/sysconfig/network-scripts/ifcfg-${1}"
-}
-
-function if-configure {
-cat <<EOF > "/etc/sysconfig/network-scripts/ifcfg-${1}"
-DEVICE=${1}
-BOOTPROTO=static
-IPADDR="${2}"
-NETMASK="${3}"
-ONBOOT=yes
-EOF
-}
+unset http_proxy
+unset https_proxy
 
 export PASSWORD="letmein"
 export DOMAIN="foo.local"
