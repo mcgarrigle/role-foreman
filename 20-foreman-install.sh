@@ -31,6 +31,9 @@ systemctl enable firewalld
 
 echo "Running Foreman Installer..."
 
+unset http_proxy
+unset https_proxy
+
 foreman-installer \
   --foreman-foreman-url="http://${FOR_SERVER}" \
   --foreman-admin-password=admin \
@@ -45,5 +48,6 @@ foreman-installer \
   --foreman-proxy-dhcp-pxeserver="${FOR_ADDRESS}" \
   --foreman-ipa-authentication=false
 
-'cp' -f foreman.yml .hammer/cli.modules.d/foreman.yml 
+mkdir -p ~/.hammer/cli.modules.d
+'cp' -f foreman.yml ~/.hammer/cli.modules.d/foreman.yml 
 
