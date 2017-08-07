@@ -44,6 +44,8 @@ yum install -y postgresql96-server
 systemctl enable postgresql-9.6
 systemctl start postgresql-9.6
 
+# CREATE ROLE foo WITH NOCREATEDB NOSUPERUSER PASSWORD 'foo';
+
 exit
 
 # --------------------------------------------
