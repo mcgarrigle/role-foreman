@@ -13,6 +13,9 @@ CONSUMER_SECRET_FILE='/opt/puppetlabs/puppet/cache/foreman_cache_data/oauth_cons
 CONSUMER_KEY=$(yaml $CONSUMER_KEY_FILE)
 CONSUMER_SECRET=$(yaml $CONSUMER_SECRET_FILE)
 
+unset http_proxy
+unset https_proxy
+
 foreman-installer \
   --enable-foreman-proxy \
   --foreman-proxy-tftp=true \
