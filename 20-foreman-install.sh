@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# check:
+# ------------------------------------------------
+# /etc/hosts    - add foreman.foo.local
+# /etc/yum.conf - add proxy = "..."
+
 source 00-environment.sh
 
 yum install -y firewalld vim
@@ -31,11 +36,10 @@ systemctl enable firewalld
 
 echo "Running Foreman Installer..."
 
-unset http_proxy
-unset https_proxy
+unset http_proxy https_proxy
 
 foreman-installer \
-  --foreman-foreman-url="http://${FOR_SERVER}" \
+  --foreman-foreman-url="${FOR_URL}" \
   --foreman-admin-password=admin \
   --foreman-configure-epel-repo=false \
   --foreman-configure-scl-repo=false \
