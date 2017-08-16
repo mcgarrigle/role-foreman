@@ -31,9 +31,9 @@ echo $ETH1 $ADDRESS1
 
 # --------------------------------------------
 
-yum install -y http://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm
-yum install -y https://yum.theforeman.org/releases/1.14/el7/x86_64/foreman-release.rpm
-yum install -y https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-centos96-9.6-3.noarch.rpm
+yum install -y "http://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm"
+yum install -y "https://yum.theforeman.org/releases/1.14/el7/x86_64/foreman-release.rpm"
+yum install -y "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-centos96-9.6-3.noarch.rpm"
 
 yum install -y centos-release-scl centos-release-scl-rh foreman-release-scl
 yum install -y puppetserver puppet-agent
@@ -95,14 +95,14 @@ echo "Running Foreman Installer..."
 unset http_proxy https_proxy
 
 foreman-installer \
-  --foreman-admin-password=admin \
-  --foreman-db-adapter=postgresql \
+  --foreman-admin-password="admin" \
+  --foreman-db-adapter="postgresql" \
   --foreman-db-manage=false \
-  --foreman-db-database=foreman \
-  --foreman-db-username=foreman \
-  --foreman-db-password=foreman \
-  --foreman-db-host=localhost \
-  --foreman-db-port=5432
+  --foreman-db-database="foreman" \
+  --foreman-db-username="foreman" \
+  --foreman-db-password="foreman" \
+  --foreman-db-host="localhost" \
+  --foreman-db-port="5432"
 
 # --------------------------------------------
 echo "Installing PuppetDB..."
@@ -120,8 +120,8 @@ puppet resource service puppetdb ensure=running enable=true
 foreman-installer \
   --enable-foreman-plugin-puppetdb \
   --puppet-server-puppetdb-host="${HOSTNAME}" \
-  --puppet-server-reports=foreman,puppetdb \
-  --puppet-server-storeconfigs-backend=puppetdb \
+  --puppet-server-reports="foreman,puppetdb" \
+  --puppet-server-storeconfigs-backend="puppetdb" \
   --foreman-plugin-puppetdb-address="https://${HOSTNAME}:8081/pdb/cmd/v1" \
   --foreman-plugin-puppetdb-dashboard-address="http://localhost:8080/pdb/dashboard"
 
