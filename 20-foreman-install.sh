@@ -7,6 +7,12 @@
 
 # source 00-environment.sh
 
+function uppercase {
+  echo $1 | awk '{ print toupper($0) }'
+}
+
+alias facter='/opt/puppetlabs/bin/facter'
+
 yum install -y epel-release
 yum install -y facter
 
@@ -25,8 +31,6 @@ echo $ETH1 $ADDRESS1
 
 # --------------------------------------------
 
-yum install -y firewalld vim
-
 yum install -y http://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm
 yum install -y https://yum.theforeman.org/releases/1.14/el7/x86_64/foreman-release.rpm
 yum install -y https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-centos96-9.6-3.noarch.rpm
@@ -34,11 +38,14 @@ yum install -y https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x
 yum install -y centos-release-scl centos-release-scl-rh foreman-release-scl
 yum install -y puppetserver puppet-agent
 yum install -y foreman-installer
+yum install -y vim
 
 echo "DHCP/PXE interface = ${ETH0}"
 
 # --------------------------------------------
 echo "Setting up Firewall Rules..."
+
+yum install -y firewalld 
 
 #systemctl start firewalld
 #firewall-cmd --permanent --add-service=http
@@ -65,7 +72,22 @@ yum install -y postgresql96-server
 systemctl enable postgresql-9.6
 systemctl start postgresql-9.6
 
-# CREATE ROLE foo WITH NOCREATEDB NOSUPERUSER PASSWORD 'foo';
+sudo -u postgres psql -c "CREATE ROLE foreman WITH LOGIN NOCREATEDB NOSUPERUSER PASSWORD 'foreman';"
+sudo -u postgres psql -c "CREATE DATABASE foreman ENCODING 'UTF8' OWNER 'foreman';"
+
+sudo -u postgres psql -c "CREATE ROLE puppetdb WITH LOGIN NOCREATEDB NOSUPERUSER PASSWORD 'puppetdb';"
+sudo -u postgres psql -c "CREATE DATABASE puppetdb ENCODING 'UTF8' OWNER 'puppetdb';"
+
+cat <<EOF > /var/lib/pgsql/9.6/data/pg_hba.conf
+local all  postgres ident
+local all  all      ident
+host  all  postgres 127.0.0.1/32 md5
+host  all  postgres 0.0.0.0/0    reject
+host  all  all      127.0.0.1/32 md5
+host  all  all      ::1/128      md5
+EOF
+
+systemctl restart postgresql-9.6
 
 exit
 
