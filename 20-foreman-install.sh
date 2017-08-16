@@ -89,26 +89,45 @@ EOF
 
 systemctl restart postgresql-9.6
 
-exit
-
 # --------------------------------------------
 echo "Running Foreman Installer..."
 
 unset http_proxy https_proxy
 
 foreman-installer \
-  --foreman-foreman-url="${FOR_URL}" \
   --foreman-admin-password=admin \
-  --foreman-configure-epel-repo=false \
-  --foreman-configure-scl-repo=false \
-  --enable-foreman-plugin-dhcp-browser \
-  --foreman-proxy-tftp=true \
-  --foreman-proxy-dhcp=true \
-  --foreman-proxy-dhcp-interface="${ETH0}" \
-  --foreman-proxy-dhcp-range="${IPRANGE}" \
-  --foreman-proxy-dhcp-nameservers="${FOR_ADDRESS}" \
-  --foreman-proxy-dhcp-pxeserver="${FOR_ADDRESS}" \
-  --foreman-ipa-authentication=false
+  --foreman-db-adapter=postgresql \
+  --foreman-db-manage=false \
+  --foreman-db-database=foreman \
+  --foreman-db-username=foreman \
+  --foreman-db-password=foreman \
+  --foreman-db-host=localhost \
+  --foreman-db-port=5432
+
+# --------------------------------------------
+echo "Installing PuppetDB..."
+
+puppet resource package puppetdb ensure=latest
+
+cat <<EOF > /etc/puppetlabs/puppetdb/conf.d/database.ini
+subname = //127.0.0.1:5432/puppetdb
+username = puppetdb
+password = puppetdb
+EOF
+
+puppet resource service puppetdb ensure=running enable=true
+
+foreman-installer \
+  --enable-foreman-plugin-puppetdb \
+  --puppet-server-puppetdb-host="${HOSTNAME}" \
+  --puppet-server-reports=foreman,puppetdb \
+  --puppet-server-storeconfigs-backend=puppetdb \
+  --foreman-plugin-puppetdb-address="https://${HOSTNAME}:8081/pdb/cmd/v1" \
+  --foreman-plugin-puppetdb-dashboard-address="http://localhost:8080/pdb/dashboard"
+
+setsebool -P passenger_can_connect_all on
+
+# --------------------------------------------
 
 mkdir -p ~/.hammer/cli.modules.d
 'cp' -f foreman.yml ~/.hammer/cli.modules.d/foreman.yml 
