@@ -5,7 +5,25 @@
 # /etc/hosts    - add foreman.foo.local
 # /etc/yum.conf - add proxy = "..."
 
-source 00-environment.sh
+# source 00-environment.sh
+
+yum install -y epel-release
+yum install -y facter
+
+DOMAIN=$(facter domain)
+REALM=$(uppercase ${DOMAIN})
+
+ETHS=$(facter interfaces)
+ETH0=$(echo $ETHS | cut -d, -f 1)
+ETH1=$(echo $ETHS | cut -d, -f 2)
+ADDRESS0=$(facter ipaddress_${ETH0})
+ADDRESS1=$(facter ipaddress_${ETH1})
+
+echo $HOSTNAME $DOMAIN $REALM
+echo $ETH0 $ADDRESS0
+echo $ETH1 $ADDRESS1
+
+# --------------------------------------------
 
 yum install -y firewalld vim
 
@@ -14,7 +32,7 @@ yum install -y https://yum.theforeman.org/releases/1.14/el7/x86_64/foreman-relea
 yum install -y https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-centos96-9.6-3.noarch.rpm
 
 yum install -y centos-release-scl centos-release-scl-rh foreman-release-scl
-yum install -y puppetserver puppetdb puppet-agent
+yum install -y puppetserver puppet-agent
 yum install -y foreman-installer
 
 echo "DHCP/PXE interface = ${ETH0}"
@@ -34,6 +52,9 @@ echo "Setting up Firewall Rules..."
 #firewall-cmd --permanent --add-port=8140/tcp
 #firewall-cmd --reload
 #systemctl enable firewalld
+
+systemctl stop firewalld
+systemctl disable firewalld
 
 # --------------------------------------------
 echo "Installing Postgresql..."
