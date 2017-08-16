@@ -109,7 +109,7 @@ echo "Installing PuppetDB..."
 
 puppet resource package puppetdb ensure=latest
 
-cat <<EOF > /etc/puppetlabs/puppetdb/conf.d/database.ini
+cat <<EOF >> /etc/puppetlabs/puppetdb/conf.d/database.ini
 subname = //127.0.0.1:5432/puppetdb
 username = puppetdb
 password = puppetdb
