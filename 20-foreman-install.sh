@@ -107,6 +107,10 @@ foreman-installer \
 # --------------------------------------------
 echo "Installing PuppetDB..."
 
+# reload puppet path
+
+source /etc/profile
+
 puppet resource package puppetdb ensure=latest
 
 cat <<EOF >> /etc/puppetlabs/puppetdb/conf.d/database.ini
