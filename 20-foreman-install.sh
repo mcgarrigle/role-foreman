@@ -5,22 +5,47 @@
 # /etc/hosts    - add foreman.foo.local
 # /etc/yum.conf - add proxy = "..."
 
-source 00-environment.sh
+# source 00-environment.sh
 
-yum install -y firewalld vim
+function uppercase {
+  echo $1 | awk '{ print toupper($0) }'
+}
 
-yum install -y http://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm
-yum install -y https://yum.theforeman.org/releases/1.14/el7/x86_64/foreman-release.rpm
-yum install -y https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-centos96-9.6-3.noarch.rpm
+alias facter='/opt/puppetlabs/bin/facter'
+
+yum install -y epel-release
+yum install -y facter
+
+DOMAIN=$(facter domain)
+REALM=$(uppercase ${DOMAIN})
+
+ETHS=$(facter interfaces)
+ETH0=$(echo $ETHS | cut -d, -f 1)
+ETH1=$(echo $ETHS | cut -d, -f 2)
+ADDRESS0=$(facter ipaddress_${ETH0})
+ADDRESS1=$(facter ipaddress_${ETH1})
+
+echo $HOSTNAME $DOMAIN $REALM
+echo $ETH0 $ADDRESS0
+echo $ETH1 $ADDRESS1
+
+# --------------------------------------------
+
+yum install -y "http://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm"
+yum install -y "https://yum.theforeman.org/releases/1.14/el7/x86_64/foreman-release.rpm"
+yum install -y "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-centos96-9.6-3.noarch.rpm"
 
 yum install -y centos-release-scl centos-release-scl-rh foreman-release-scl
-yum install -y puppetserver puppetdb puppet-agent
+yum install -y puppetserver puppet-agent
 yum install -y foreman-installer
+yum install -y vim
 
 echo "DHCP/PXE interface = ${ETH0}"
 
 # --------------------------------------------
 echo "Setting up Firewall Rules..."
+
+yum install -y firewalld 
 
 #systemctl start firewalld
 #firewall-cmd --permanent --add-service=http
@@ -35,6 +60,9 @@ echo "Setting up Firewall Rules..."
 #firewall-cmd --reload
 #systemctl enable firewalld
 
+systemctl stop firewalld
+systemctl disable firewalld
+
 # --------------------------------------------
 echo "Installing Postgresql..."
 
@@ -44,9 +72,22 @@ yum install -y postgresql96-server
 systemctl enable postgresql-9.6
 systemctl start postgresql-9.6
 
-# CREATE ROLE foo WITH NOCREATEDB NOSUPERUSER PASSWORD 'foo';
+sudo -u postgres psql -c "CREATE ROLE foreman WITH LOGIN NOCREATEDB NOSUPERUSER PASSWORD 'foreman';"
+sudo -u postgres psql -c "CREATE DATABASE foreman ENCODING 'UTF8' OWNER 'foreman';"
 
-exit
+sudo -u postgres psql -c "CREATE ROLE puppetdb WITH LOGIN NOCREATEDB NOSUPERUSER PASSWORD 'puppetdb';"
+sudo -u postgres psql -c "CREATE DATABASE puppetdb ENCODING 'UTF8' OWNER 'puppetdb';"
+
+cat <<EOF > /var/lib/pgsql/9.6/data/pg_hba.conf
+local all  postgres ident
+local all  all      ident
+host  all  postgres 127.0.0.1/32 md5
+host  all  postgres 0.0.0.0/0    reject
+host  all  all      127.0.0.1/32 md5
+host  all  all      ::1/128      md5
+EOF
+
+systemctl restart postgresql-9.6
 
 # --------------------------------------------
 echo "Running Foreman Installer..."
@@ -54,18 +95,43 @@ echo "Running Foreman Installer..."
 unset http_proxy https_proxy
 
 foreman-installer \
-  --foreman-foreman-url="${FOR_URL}" \
-  --foreman-admin-password=admin \
-  --foreman-configure-epel-repo=false \
-  --foreman-configure-scl-repo=false \
-  --enable-foreman-plugin-dhcp-browser \
-  --foreman-proxy-tftp=true \
-  --foreman-proxy-dhcp=true \
-  --foreman-proxy-dhcp-interface="${ETH0}" \
-  --foreman-proxy-dhcp-range="${IPRANGE}" \
-  --foreman-proxy-dhcp-nameservers="${FOR_ADDRESS}" \
-  --foreman-proxy-dhcp-pxeserver="${FOR_ADDRESS}" \
-  --foreman-ipa-authentication=false
+  --foreman-admin-password="admin" \
+  --foreman-db-adapter="postgresql" \
+  --foreman-db-manage=false \
+  --foreman-db-database="foreman" \
+  --foreman-db-username="foreman" \
+  --foreman-db-password="foreman" \
+  --foreman-db-host="localhost" \
+  --foreman-db-port="5432"
+
+# --------------------------------------------
+echo "Installing PuppetDB..."
+
+# reload puppet path
+
+source /etc/profile
+
+puppet resource package puppetdb ensure=latest
+
+cat <<EOF >> /etc/puppetlabs/puppetdb/conf.d/database.ini
+subname = //127.0.0.1:5432/puppetdb
+username = puppetdb
+password = puppetdb
+EOF
+
+puppet resource service puppetdb ensure=running enable=true
+
+foreman-installer \
+  --enable-foreman-plugin-puppetdb \
+  --puppet-server-puppetdb-host="${HOSTNAME}" \
+  --puppet-server-reports="foreman,puppetdb" \
+  --puppet-server-storeconfigs-backend="puppetdb" \
+  --foreman-plugin-puppetdb-address="https://${HOSTNAME}:8081/pdb/cmd/v1" \
+  --foreman-plugin-puppetdb-dashboard-address="http://localhost:8080/pdb/dashboard"
+
+setsebool -P passenger_can_connect_all on
+
+# --------------------------------------------
 
 mkdir -p ~/.hammer/cli.modules.d
 'cp' -f foreman.yml ~/.hammer/cli.modules.d/foreman.yml 
