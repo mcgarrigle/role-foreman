@@ -11,7 +11,7 @@ function uppercase {
   echo $1 | awk '{ print toupper($0) }'
 }
 
-alias facter='/opt/puppetlabs/bin/facter'
+export PATH=$PATH:/opt/puppetlabs/bin
 
 yum install -y epel-release
 yum install -y facter
@@ -106,10 +106,6 @@ foreman-installer \
 
 # --------------------------------------------
 echo "Installing PuppetDB..."
-
-# reload puppet path
-
-source /etc/profile
 
 puppet resource package puppetdb ensure=latest
 
