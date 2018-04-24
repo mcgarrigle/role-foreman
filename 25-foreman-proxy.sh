@@ -42,8 +42,9 @@ foreman-installer \
   --foreman-proxy-tftp=true \
   --foreman-proxy-tftp-servername="${ADDRESS0}" \
   --foreman-proxy-dhcp=true \
+  --foreman-proxy-dhcp-range="10.0.30.20 10.0.30.250" \
   --foreman-proxy-dhcp-interface="${ETH0}" \
-  --foreman-proxy-dhcp-gateway= \
+  --foreman-proxy-dhcp-search-domains="${DOMAIN}" \
   --foreman-proxy-dhcp-nameservers="${NAMESERVERS}" \
   --foreman-proxy-dns=false \
   --foreman-proxy-foreman-base-url="${FOREMAN_URL}" \
