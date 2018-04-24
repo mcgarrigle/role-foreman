@@ -1,7 +1,11 @@
 #!/bin/bash
 
+function uppercase {
+  echo $1 | awk '{ print toupper($0) }'
+}
+
 function yaml {
-  TEXT=$(cat $1 | sed 's/^--- //')
+  TEXT=$(cat $1 | awk '{ print $2 }')
   echo $TEXT
 }
 
@@ -25,6 +29,9 @@ CONSUMER_SECRET_FILE='/opt/puppetlabs/puppet/cache/foreman_cache_data/oauth_cons
 
 CONSUMER_KEY=$(yaml $CONSUMER_KEY_FILE)
 CONSUMER_SECRET=$(yaml $CONSUMER_SECRET_FILE)
+
+echo "outh key    ${CONSUMER_KEY}"
+echo "outh secret ${CONSUMER_SECRET}"
 
 unset http_proxy https_proxy
 
