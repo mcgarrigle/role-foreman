@@ -51,3 +51,26 @@ foreman-installer \
   --foreman-proxy-oauth-consumer-key="${CONSUMER_KEY}" \
   --foreman-proxy-oauth-consumer-secret="${CONSUMER_SECRET}"
 
+# remember to refesh proxy features in foreman
+# if you have difficulty
+
+hammer subnet create \
+  --name "management" \
+  --boot-mode="DHCP" \
+  --network="10.0.30.0" \
+  --mask="255.255.255.0" \
+  --from="10.0.30.20" \
+  --to="10.0.30.250" \
+  --domains="${DOMAIN}" \
+  --ipam="None" \
+  --tftp-id=1 \
+  --dhcp-id=1
+
+hammer subnet create \
+  --name "cluster" \
+  --boot-mode="Static" \
+  --network="10.0.40.0" \
+  --mask="255.255.255.0" \
+  --domains="${DOMAIN}" \
+  --ipam="None"
+
