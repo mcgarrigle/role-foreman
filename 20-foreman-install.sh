@@ -4,8 +4,11 @@
 # ------------------------------------------------
 # /etc/hosts    - add foreman.foo.local
 # /etc/yum.conf - add proxy = "..."
-
-# source 00-environment.sh
+#
+# yum install -y "http://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm"
+# yum install facter
+#
+# then log out and back in again so that the shell can find facter
 
 function uppercase {
   echo $1 | awk '{ print toupper($0) }'

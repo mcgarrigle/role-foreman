@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+
+rpm = ARGV[0]
+
+version = %x[rpm -qp --queryformat '%{VERSION}.%{RELEASE}\n' #{rpm}].chomp
+version = version.split('.').shift(3).join(".")
+puts version

@@ -37,6 +37,8 @@ unset http_proxy https_proxy
 
 FOREMAN_URL="https://${FQDN}"
 
+hammer domain create --name="foo.local"
+
 foreman-installer \
   --enable-foreman-proxy \
   --foreman-proxy-tftp=true \
