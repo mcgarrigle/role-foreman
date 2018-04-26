@@ -13,7 +13,16 @@ function uppercase {
 
 alias facter='/opt/puppetlabs/bin/facter'
 
+yum install -y vim
 yum install -y epel-release
+yum install -y "http://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm"
+yum install -y "https://yum.theforeman.org/releases/latest/el7/x86_64/foreman-release.rpm"
+yum install -y "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-centos96-9.6-3.noarch.rpm"
+
+yum install -y centos-release-scl centos-release-scl-rh foreman-release-scl
+yum install -y puppetserver puppet-agent
+yum install -y foreman-installer
+
 yum install -y facter
 
 DOMAIN=$(facter domain)
@@ -30,15 +39,6 @@ echo $ETH0 $ADDRESS0
 echo $ETH1 $ADDRESS1
 
 # --------------------------------------------
-
-yum install -y "http://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm"
-yum install -y "https://yum.theforeman.org/releases/1.14/el7/x86_64/foreman-release.rpm"
-yum install -y "https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-centos96-9.6-3.noarch.rpm"
-
-yum install -y centos-release-scl centos-release-scl-rh foreman-release-scl
-yum install -y puppetserver puppet-agent
-yum install -y foreman-installer
-yum install -y vim
 
 echo "DHCP/PXE interface = ${ETH0}"
 
@@ -133,6 +133,6 @@ setsebool -P passenger_can_connect_all on
 
 # --------------------------------------------
 
-mkdir -p ~/.hammer/cli.modules.d
-'cp' -f foreman.yml ~/.hammer/cli.modules.d/foreman.yml 
+#mkdir -p ~/.hammer/cli.modules.d
+#'cp' -f foreman.yml ~/.hammer/cli.modules.d/foreman.yml 
 
