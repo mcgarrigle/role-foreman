@@ -12,17 +12,3 @@ hammer host create \
 
 hammer host info --name subject.foo.local
 
-# Available keys for --interface:
-#  mac
-#  ip
-#  type                Possible values: interface, bmc, bond, bridge
-#  name
-#  subnet_id
-#  domain_id
-#  identifier
-#  managed             true/false
-#  primary             true/false, each managed hosts needs to have one primary interface.
-#  provision           true/false
-#  virtual             true/false
-
-
