@@ -1,3 +1,13 @@
+Foreman Role for Laboratory
+===========================
+
+Features:
+
+* Foreman
+* Puppet 4.0
+* PuppetDB
+* PostgreSQL
+* CentOS 7 local repository
 
 Example implementation:
 
@@ -31,7 +41,7 @@ Log out and back in again, then:
 
 # ./10-foreman-install.sh
 # ./20-foreman-proxy.sh
-# ./30-foreman-centos.sh
+# ./30-foreman-centos.sh {path to CentOS ISO}
 
 If you are integrating with an IPA/IdM realm then look at:
 

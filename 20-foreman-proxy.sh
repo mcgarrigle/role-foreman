@@ -37,7 +37,7 @@ unset http_proxy https_proxy
 
 FOREMAN_URL="https://${FQDN}"
 
-hammer domain create --name="foo.local"
+hammer domain create --name="${DOMAIN}"
 
 foreman-installer \
   --enable-foreman-proxy \
@@ -57,19 +57,17 @@ foreman-installer \
 # if you have difficulty
 
 hammer subnet create \
-  --name "management" \
-  --boot-mode="DHCP" \
+  --name="management" \
+  --boot-mode="Static" \
   --network="10.0.30.0" \
   --mask="255.255.255.0" \
-  --from="10.0.30.20" \
-  --to="10.0.30.250" \
   --domains="${DOMAIN}" \
   --ipam="None" \
   --tftp-id=1 \
   --dhcp-id=1
 
 hammer subnet create \
-  --name "cluster" \
+  --name="cluster" \
   --boot-mode="Static" \
   --network="10.0.40.0" \
   --mask="255.255.255.0" \
