@@ -8,7 +8,7 @@ Example implementation:
              |             |               
       enp0s8 |             |               
       +------+----+  +-----+-----+                 
-      |   mason   |  |  guest1   |
+      |  foreman  |  |  guest1   |
       +------+----+  +-----+-----+
       enp0s3 |             |     
              |             |    
@@ -32,5 +32,8 @@ Log out and back in again, then:
 # ./10-foreman-install.sh
 # ./20-foreman-proxy.sh
 # ./30-foreman-centos.sh
+
+If you are integrating with an IPA/IdM realm then look at:
+
 # ./40-realm-proxy.sh
 
