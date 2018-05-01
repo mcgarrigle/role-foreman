@@ -34,7 +34,7 @@ Prerequisites:
 
 * CentOS 7.X VM
 * 4G RAM
-* 50G Hard Disk
+* 50G Hard Disk (20G minimum)
 * Network topology as above
 
 Instructions:
